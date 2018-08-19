@@ -1,35 +1,46 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Wed Aug  1 11:52:06 2018
-
 @author: Tony Lin
+@description: approximates the value of Pi by first having a circle
+of radius r inside a square of length 2r and then randomly sampling
+(Monte Carlo) and counting the number of points that fall in the circle.
+Pi can then be approximated by dividing the points in the circle by the
+total number of points and multiplying by four.
 """
+
+import matplotlib; matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
 import math
 import random
-import matplotlib.pyplot as plt
 
-def approx_pi(num_iter = 10000, range_start = -1, range_end = 1):
-    x = []
-    y = []
-    circ_sq = []
-    num_circ = 0.0
-    num_sq = float(num_iter)
-    for i in range(0, num_iter):
-        x.append(random.randrange(-10000, 10000)/10000)
-        y.append(random.randrange(-10000, 10000)/10000)
-        dist = math.hypot(x[i], y[i])
-        if dist <= 1:
-            num_circ = num_circ + 1
-            circ_sq.append(1)
-        else:
-            circ_sq.append(0)
-    pi = (num_circ/num_sq)*4.0
-    return pi, x, y, circ_sq
+fig, ax = plt.subplots()
 
-pi, x, y, circ_sq = approx_pi(num_iter = 100_000)
+pi = []
+color = 'blue'
+num_iter = 100
+num_in_circ = 0.0
+num_in_sq = float(num_iter)
 
-fig = plt.figure()
-plt.axis('equal')
-plt.scatter(x, y, c = circ_sq)
-print(pi)
+plt.xlim(-1, 1)
+plt.ylim(-1, 1)
+
+plt.draw()
+
+for i in range(0, num_iter):
+    x = random.randrange(-10000, 10000)/10000
+    y = random.randrange(-10000, 10000)/10000
+
+    dist = math.hypot(x, y)
+    if dist <= 1:
+        num_in_circ += 1
+        color = 'blue'
+    else:
+        color = 'red'
+
+    ax.scatter(x, y, c=color)
+    fig.canvas.draw_idle()
+    plt.pause(0.01)
+
+    pi.append((num_in_circ/num_in_sq)*4.0)
+
+print(pi[num_iter-1])
+plt.waitforbuttonpress()
